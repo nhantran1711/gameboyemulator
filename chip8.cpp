@@ -16,6 +16,14 @@ typedef struct
 } config_t;
 
 
+
+
+// Set up init emulate config from passed in argu
+bool set_config(config_t *config, const int argc, const char **argv) {
+
+}
+
+
 // Init SDL
 bool init_sdl(sdl_t *sdl, const config_t config) {
     if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) != 0) {
@@ -42,11 +50,14 @@ bool init_sdl(sdl_t *sdl, const config_t config) {
 // Final clean up program
 void final_cleanup(void) {
     SDL_DestroyWindow(window);
-    SDL_Quit();
+    SDL_Quit(); // Shut up subsystem
 }
 
 // Main method
-int main() {
+int main(int argc, char **argv) {
+
+    (void)argc;
+    (void)argv;
 
     sdl_t sdl = {0};
     bool done = false;
@@ -58,7 +69,9 @@ int main() {
 
     // Init emulater configs
     config_t config = {0};
-    
+    if (!set_config(&config, argc, argv)) {
+        exit(EXIT_FAILURE);
+    }
 
     // Final Cleanup
     final_cleanup();
