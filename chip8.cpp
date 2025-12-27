@@ -21,6 +21,16 @@ typedef struct
 // Set up init emulate config from passed in argu
 bool set_config(config_t *config, const int argc, const char **argv) {
 
+    // Set default
+    *config = (config_t) {
+        .window_width = 64, // Origin X
+        .window_height = 32 // Origin Y
+    };
+
+    // Override default values
+    for (int i = 1; i <  argc; i ++) {
+        (void)argv[i]; // Prevent compiler error from unused variables
+    }
 }
 
 
@@ -37,19 +47,19 @@ bool init_sdl(sdl_t *sdl, const config_t config) {
         SDL_WINDOWPOS_CENTERED, // Y pos
         config.window_width, // Width, in pixel
         config.window_height, // Height, in pixel
-        SDl_Window_OPENGL // Flags
-    )
+        SDL_Window_OPENGL // Flags
+    );
 
     if (!sdl -> window) {
-        SDL_Log("Could not create SDL Window %s", SDL_GetError())
+        SDL_Log("Could not create SDL Window %s", SDL_GetError());
         return false;
     }
     return true;
 }
 
 // Final clean up program
-void final_cleanup(void) {
-    SDL_DestroyWindow(window);
+void final_cleanup(sdl_t sdl) {
+    SDL_DestroyWindow(sdl.window);
     SDL_Quit(); // Shut up subsystem
 }
 
@@ -62,19 +72,21 @@ int main(int argc, char **argv) {
     sdl_t sdl = {0};
     bool done = false;
 
-    // Init SDL
-    if (!init_sdl(&sdl)) {
-        exit(EXIT_FAILURE);
-    }
-
+    
     // Init emulater configs
     config_t config = {0};
     if (!set_config(&config, argc, argv)) {
         exit(EXIT_FAILURE);
     }
 
+    // Init SDL
+    if (!init_sdl(&sdl, config)) {
+        exit(EXIT_FAILURE);
+    }
+
+
     // Final Cleanup
-    final_cleanup();
+    final_cleanup(&sdl);
 
     exit(EXIT_SUCCESS);
 }
