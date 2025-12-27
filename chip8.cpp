@@ -101,10 +101,10 @@ int main(int argc, char **argv) {
     (void)argc;
     (void)argv;
 
-    sdl_t sdl = {0, 0};
+    sdl_t sdl = {0, 0, 0};
     
     // Init emulater configs
-    config_t config = {0, 0};
+    config_t config = {0, 0, 0, 0};
     if (!set_config(&config, argc, (const char**)argv)) {
         exit(EXIT_FAILURE);
     }
@@ -121,7 +121,7 @@ int main(int argc, char **argv) {
     // Main emulator loop
     while (true) {
         // Delay for 60fps
-        SDL_Delay();
+        SDL_Delay(60);
 
         // Update the window with changes
         update_screen(sdl);
