@@ -8,7 +8,47 @@ The project uses **C++ 17 (GCC 15.2.0)** and **SDL3** for graphics and input.
 
 ## Installation
 
-Installation instructions will be provided once the project is complete.  
+Right now the provided installation only works on MacOS system, I figured Ubuntu/Linux user can find the away to install g++ , make, and sdl3 on the internet. 
+
+Sorry windows users, it will get buggy.
+
+Install Homebrew (if not already installed):
+
+```bash
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+```
+
+Install SDL3:
+
+
+```bash
+brew install sdl3
+```
+
+
+Install g++ and make (if not already installed):
+
+
+```bash
+brew install gcc make
+```
+
+
+Clone github
+
+```bash
+git clone https://github.com/nhantran1711/chip8emulator.git
+cd chip8emulator / or ur folder
+```
+
+
+## Running application
+```bash
+make
+./chip8
+```
+
+
 
 ---
 
