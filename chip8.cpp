@@ -17,6 +17,7 @@ typedef struct
     uint32_t window_height; // SDL Window height
     uint32_t fg_color; // Foreground colour
     uint32_t bg_color; // background colour
+    uint32_t scale_factor; // scale factor
 } config_t;
 
 
@@ -30,7 +31,8 @@ bool set_config(config_t *config, const int argc, const char **argv) {
         640, // Origin X
         320, // Origin Y
         0xFFFFFFFF, // White
-        0x00000000 // Black
+        0x00000000, // Black
+        20 // Scale Factor
     };
 
     // Override default values
@@ -54,8 +56,8 @@ bool init_sdl(sdl_t *sdl, const config_t config) {
 
     sdl -> window = SDL_CreateWindow(
         "SDL 3 Window ", // Window title
-        config.window_width, // Width, in pixel
-        config.window_height, // Height, in pixel
+        config.window_width * config.scale_factor, // Width, in pixel
+        config.window_height * config.scale_factor, // Height, in pixel
         0 // Flags
     );
 
@@ -105,10 +107,10 @@ int main(int argc, char **argv) {
     (void)argc;
     (void)argv;
 
-    sdl_t sdl = {0, 0, 0};
+    sdl_t sdl = {};
     
     // Init emulater configs
-    config_t config = {0, 0, 0, 0};
+    config_t config = {};
     if (!set_config(&config, argc, (const char**)argv)) {
         exit(EXIT_FAILURE);
     }
