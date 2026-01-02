@@ -3,6 +3,7 @@
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_main.h>
 
+// SDL Container object
 typedef struct 
 {
     SDL_Window *window;
@@ -11,6 +12,7 @@ typedef struct
 
 } sdl_t;
 
+// Configuration object
 typedef struct 
 {
     uint32_t window_width; // SDL Window width
@@ -20,6 +22,19 @@ typedef struct
     uint32_t scale_factor; // scale factor
 } config_t;
 
+// Emulator states
+typedef enum 
+{
+    QUIT,
+    RUNNING,
+    PAUSE
+} emulator_state_t;
+
+// Chip 8 Object
+typedef struct 
+{
+    emulator_state_t state;
+} chip8_t;
 
 
 
@@ -100,6 +115,30 @@ void update_screen(const sdl_t sdl) {
     SDL_RenderPresent(sdl.renderer);
 }
 
+// Hanlde user input
+void handle_input(chip8_t *chip8) {
+    // Event
+    SDL_Event event;
+    while (SDL_PollEvent(&event)) {  // Poll events from SDL
+        switch (event.type)
+        {
+        case SDL_QUIT:
+            chip8 -> state == QUIT;
+            return;
+        
+        case SDL_KEYDOWN:
+
+        case SDL_KEYUP;
+        }
+    }
+}
+
+
+
+
+
+
+
 
 // Main method
 int main(int argc, char **argv) {
@@ -115,6 +154,12 @@ int main(int argc, char **argv) {
         exit(EXIT_FAILURE);
     }
 
+    // Init chip 8 machine
+    chip8_t chip8 = {};
+    if (!init_chip8(&chip8)) {
+        exit(EXIT_FAILURE);
+    }
+
     // Init SDL
     if (!init_sdl(&sdl, config)) {
         exit(EXIT_FAILURE);
@@ -125,15 +170,9 @@ int main(int argc, char **argv) {
 
 
     // Main emulator loop
-    bool running = true;
-    while (running) {
-        // Event
-        SDL_Event event;
-        while (SDL_PollEvent(&event)) {  // Poll events from SDL
-            if (event.type == SDL_EVENT_QUIT) {  // Check for close window event
-                running = false;
-            }
-        }
+    while (chip8.state != QUIT) {
+        
+        handle_input(&chip8);
 
         // Delay for 60fps
         SDL_Delay(60);
