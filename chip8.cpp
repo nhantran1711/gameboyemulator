@@ -122,18 +122,30 @@ void handle_input(chip8_t *chip8) {
     while (SDL_PollEvent(&event)) {  // Poll events from SDL
         switch (event.type)
         {
-        case SDL_QUIT:
-            chip8 -> state == QUIT;
+        case SDL_EVENT_QUIT:
+            chip8 -> state = QUIT;
             return;
         
-        case SDL_KEYDOWN:
+        case SDL_EVENT_KEY_DOWN:
+            break;
 
-        case SDL_KEYUP;
+        case SDL_EVENT_KEY_UP:
+            break;
+
+        default:
+            break;
         }
     }
 }
 
+// Handle chip 8 init
+bool init_chip8(chip8_t *chip8) {
 
+    // Default as running
+    chip8->state = RUNNING; 
+
+    return true;
+}
 
 
 
