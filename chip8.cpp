@@ -127,6 +127,11 @@ void handle_input(chip8_t *chip8) {
             return;
         
         case SDL_EVENT_KEY_DOWN:
+            if (event.key.key == SDLK_ESCAPE) {
+                chip8->state = QUIT;
+                return;
+            }
+
             break;
 
         case SDL_EVENT_KEY_UP:
