@@ -34,6 +34,16 @@ typedef enum
 typedef struct 
 {
     emulator_state_t state;
+    uint8_t ram[4096];
+    bool display[64 * 32]; // original chip 8 resolution
+    uint8_t stack[12]; // Subroutine stack
+    uint8_t V[16]; // Data Register
+    uint8_t I; // Index Register
+    uint8_t delay_timer; // Decrement at 60hz wheb > 0
+    uint8_t sound_timer; // Decrement at 60hz and play tones > 0
+    bool keypad[16]; // Key pad 0x0-0xF
+    char *rom_name; // Current rom name
+    
 } chip8_t;
 
 
