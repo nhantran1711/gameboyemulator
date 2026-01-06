@@ -178,7 +178,29 @@ void handle_input(chip8_t *chip8) {
 
 // Emulate 1 chip 8 instuctions
 void emulator_instructions(chip8_t *chip8) {
-    opcodes
+    // Get the next opcode from RAM
+    chip8->inst.opcode = (chip8->ram[chip8 -> PC] << 8) | (chip8 -> ram[PC + 1]);
+
+    // Pre increment program counter
+    chip8->PC += 2; 
+
+    // Fill out cur instructionf format
+    chip8->inst.NNN = chip8->inst.opcode & 0x0FFF;
+    chip8->inst.NN = chip8->inst.opcode & 0x0FF;
+    chip8->inst.N = chip8->inst.opcode & 0x0F;
+    chip8->inst.X = (chip8->inst.opcode >> 8) & 0x0F;
+    chip8->inst.Y = (chip8->inst.opcode >> 4) & 0x0F;
+
+
+    switch (chip8->inst.opcode)
+    {
+    case constant expression:
+        /* code */
+        break;
+    
+    default:
+        break;
+    }
 }
 
 
