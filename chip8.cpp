@@ -177,10 +177,6 @@ bool init_chip8(chip8_t *chip8, const char rom_name[]) {
         0xF0, 0x80, 0xF0, 0x80, 0x80		// F
     }; 
 
-    // Default as running
-    chip8->state = RUNNING; 
-    chip8->PC = entry_point;
-
     // Load font
     memcpy(&chip8->ram[0], font, sizeof(font));
 
@@ -209,7 +205,12 @@ bool init_chip8(chip8_t *chip8, const char rom_name[]) {
         return false;
     };
 
-    fclost(rom)
+    fclose(rom)
+
+    // Default as running
+    chip8->state = RUNNING; 
+    chip8->PC = entry_point;
+    chip8->rom_name = rom_name;
 
     return true;
 }
