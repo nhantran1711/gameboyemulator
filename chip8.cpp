@@ -36,11 +36,12 @@ typedef struct
     emulator_state_t state;
     uint8_t ram[4096];
     bool display[64 * 32]; // original chip 8 resolution
-    uint8_t stack[12]; // Subroutine stack
+    uint16_t stack[12]; // Subroutine stack
     uint8_t V[16]; // Data Register
-    uint8_t I; // Index Register
+    uint16_t I; // Index Register
     uint8_t delay_timer; // Decrement at 60hz wheb > 0
     uint8_t sound_timer; // Decrement at 60hz and play tones > 0
+    uint16_t PC; // Program Counter
     bool keypad[16]; // Key pad 0x0-0xF
     char *rom_name; // Current rom name
     
@@ -154,10 +155,37 @@ void handle_input(chip8_t *chip8) {
 }
 
 // Handle chip 8 init
-bool init_chip8(chip8_t *chip8) {
+bool init_chip8(chip8_t *chip8, const char rom_name[]) {
+    // Entry point
+    const uint32_t entry_point = 0x200;
+    const uint8_t font[] = {
+        0xF0, 0x90, 0x90, 0x90, 0xF0,		// 0
+        0x20, 0x60, 0x20, 0x20, 0x70,		// 1
+        0xF0, 0x10, 0xF0, 0x80, 0xF0,		// 2
+        0xF0, 0x10, 0xF0, 0x10, 0xF0,		// 3
+        0x90, 0x90, 0xF0, 0x10, 0x10,		// 4
+        0xF0, 0x80, 0xF0, 0x10, 0xF0,		// 5
+        0xF0, 0x80, 0xF0, 0x90, 0xF0,		// 6
+        0xF0, 0x10, 0x20, 0x40, 0x40,		// 7
+        0xF0, 0x90, 0xF0, 0x90, 0xF0,		// 8
+        0xF0, 0x90, 0xF0, 0x10, 0xF0,		// 9
+        0xF0, 0x90, 0xF0, 0x90, 0x90,		// A
+        0xE0, 0x90, 0xE0, 0x90, 0xE0,		// B
+        0xF0, 0x80, 0x80, 0x80, 0xF0,		// C
+        0xE0, 0x90, 0x90, 0x90, 0xE0,		// D
+        0xF0, 0x80, 0xF0, 0x80, 0xF0,		// E
+        0xF0, 0x80, 0xF0, 0x80, 0x80		// F
+    } 
 
     // Default as running
     chip8->state = RUNNING; 
+    chip8->PC = entry_point;
+
+    // Load font
+
+    // Load ROM to chip8
+
+    // Set chip8 default
 
     return true;
 }
