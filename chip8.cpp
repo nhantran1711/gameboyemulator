@@ -277,21 +277,37 @@ void emulator_instructions(chip8_t *chip8, const config_t config) {
             // Screen pixels are XOR with sprite bits
             const uint8_t X_coord = chip8-> V[chip8->inst.X] % config.window_width;
             const uint8_t Y_coord = chip8-> V[chip8->inst.Y] % config.window_height;
+            const uint8_t orig_X = X_coord;
+
             chip8->V[0xF] = 0; // Init carry to 0
 
             // Loop through instructions
             for (uint8_t i = 0; i < chip8->inst.N; i++) {
                 // Get the next byte/row of sprite data
                 const uint8_t sprite_data = chip8->ram[chip9->I + i];
+                X_coord = orig_X // Reset X for the next row
+
 
                 for (uint8_t j = 7; j >= 0; j --) {
                     // If sprite pixil nits is on and display pixel is on, set carry flage
-                    if ((sprite_data & (1 << j)) && chip8->display[Y_coord * config.window_width + X_coord]) {
+                    bool *pixel = &chip8->display[Y_coord * config.window_width + X_coord]
+                    const bool sprite_bit = (sprite_data & (1 << j));
+
+                    if ( sprite_bit && *pixel) {
                         chip8->V[0xF] = 1 // Set bit to 1
                     }
 
                     // XOR Display pixel with sprite pixel/bit
-                    chip8->display[Y_coord * config.window_height + X_coord] ^= (sprite_data & (1 << j));
+                    *pixel ^= sprite_bit;
+
+                    // Stop drawing if hit right edge
+                    if (++X_coord >= config.window_width) {
+                        break;
+                    }
+                }
+                // Stop drawing when we hit the bottom edge
+                if (++Y_coord >= config.window_height) {
+                    break;
                 }
             }
     default:
