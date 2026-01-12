@@ -137,13 +137,13 @@ void clear_screen(const config_t config, sdl_t sdl) {
 
 // Update screen with changes
 void update_screen(const sdl_t sdl, const config_t config, const chip8_t chip8) {
-    SDL_Rect rect = {.x = 0, .y = 0, .w = config.scale, .h = scale_factor};
+    SDL_FRect rect = {0, 0, (float)config.scale_factor, (float)config.scale_factor};
 
     // Colours values foregrounds
-    const uint8_t fg_r = (config.bg_color >> 24) & 0xFF; // Shift to 24 bits then mask it off
-    const uint8_t fg_g = (config.bg_color >> 16) & 0xFF; // Shift to 16 bits then mask it off
-    const uint8_t fg_b = (config.bg_color >> 8) & 0xFF; // Shift to 8 bits then mask it off
-    const uint8_t fg_a = (config.bg_color >> 0) & 0xFF; // Shift to 0 bit then mask it off
+    const uint8_t fg_r = (config.fg_color >> 24) & 0xFF; // Shift to 24 bits then mask it off
+    const uint8_t fg_g = (config.fg_color >> 16) & 0xFF; // Shift to 16 bits then mask it off
+    const uint8_t fg_b = (config.fg_color >> 8) & 0xFF; // Shift to 8 bits then mask it off
+    const uint8_t fg_a = (config.fg_color >> 0) & 0xFF; // Shift to 0 bit then mask it off
 
     // Colours values background
     const uint8_t bg_r = (config.bg_color >> 24) & 0xFF; // Shift to 24 bits then mask it off
@@ -152,7 +152,7 @@ void update_screen(const sdl_t sdl, const config_t config, const chip8_t chip8) 
     const uint8_t bg_a = (config.bg_color >> 0) & 0xFF; // Shift to 0 bit then mask it off
 
     // loop through display pixel, draw a rect pre pixel to sdl window
-    for (uint32_t i = 0; i < sizeof chip8->display; i++) {
+    for (uint32_t i = 0; i < sizeof chip8.display; i++) {
         // translate index i to 2d x/y coords
         // x = i % widdow_width
         // y = i / window_width
@@ -160,14 +160,14 @@ void update_screen(const sdl_t sdl, const config_t config, const chip8_t chip8) 
         rect.y = i / config.window_width;
 
         // If the pixel is on, draw foreground
-        if (chip8->display[i]) {
-            SDL_SetRenderDrawColor(sdl.renderer, fg_r, fg_g, fg_b, fg_a)
-            SDL_RenderFillRect(sdl.renderer, rect);
+        if (chip8.display[i]) {
+            SDL_SetRenderDrawColor(sdl.renderer, fg_r, fg_g, fg_b, fg_a);
+            SDL_RenderFillRect(sdl.renderer, &rect);
         }
         // pixel is off, draw background
         else {
-            SDL_SetRenderDrawColor(sdl.renderer, bg_r, bg_g, bg_b, bg_a)
-            SDL_RenderFillRect(sdl.renderer, rect);
+            SDL_SetRenderDrawColor(sdl.renderer, bg_r, bg_g, bg_b, bg_a);
+            SDL_RenderFillRect(sdl.renderer, &rect);
         }
 
     }
@@ -253,7 +253,7 @@ void print_debug_info(chip8_t *chip8) {
 
         case 0x0D:
             // Draw at N coords
-            prinf("Draw N (%d) at height sprite at coords V%X (0x%02X), V%X (0x%02X) from memory location I (0x%04X)", 
+            printf("Draw N (%d) at height sprite at coords V%X (0x%02X), V%X (0x%02X) from memory location I (0x%04X)", 
                 chip8->inst.N, chip8->inst.X, chip8->V[chip8->inst.X], chip8->inst.Y, chip8->V[chip8->inst.Y], chip8->I
             );
             break;
@@ -317,26 +317,26 @@ void emulator_instructions(chip8_t *chip8, const config_t config) {
             // Read from memory location I
             // VF (Carry Flag) is set if any
             // Screen pixels are XOR with sprite bits
-            const uint8_t X_coord = chip8-> V[chip8->inst.X] % config.window_width;
-            const uint8_t Y_coord = chip8-> V[chip8->inst.Y] % config.window_height;
-            const uint8_t orig_X = X_coord;
+            {uint8_t X_coord = chip8-> V[chip8->inst.X] % config.window_width;
+            uint8_t Y_coord = chip8-> V[chip8->inst.Y] % config.window_height;
+            uint8_t orig_X = X_coord;
 
             chip8->V[0xF] = 0; // Init carry to 0
 
             // Loop through instructions
             for (uint8_t i = 0; i < chip8->inst.N; i++) {
                 // Get the next byte/row of sprite data
-                const uint8_t sprite_data = chip8->ram[chip9->I + i];
-                X_coord = orig_X // Reset X for the next row
+                const uint8_t sprite_data = chip8->ram[chip8->I + i];
+                X_coord = orig_X; // Reset X for the next row
 
 
-                for (uint8_t j = 7; j >= 0; j --) {
+                for (int j = 7; j >= 0; j --) {
                     // If sprite pixil nits is on and display pixel is on, set carry flage
-                    bool *pixel = &chip8->display[Y_coord * config.window_width + X_coord]
+                    bool *pixel = &chip8->display[Y_coord * config.window_width + X_coord];
                     const bool sprite_bit = (sprite_data & (1 << j));
 
                     if ( sprite_bit && *pixel) {
-                        chip8->V[0xF] = 1 // Set bit to 1
+                        chip8->V[0xF] = 1; // Set bit to 1
                     }
 
                     // XOR Display pixel with sprite pixel/bit
@@ -352,6 +352,8 @@ void emulator_instructions(chip8_t *chip8, const config_t config) {
                     break;
                 }
             }
+            break;
+        }
     default:
         break; // Invalid opcode
     }
