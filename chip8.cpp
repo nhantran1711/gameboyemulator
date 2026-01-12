@@ -195,10 +195,25 @@ void print_debug_info(chip8_t *chip8) {
                 printf("Return from subroutine from address 0x%04X\n", *(chip8->stack_ptr - 1));
                 chip8->PC = *--chip8->stack_ptr;
             }
+            else {
+                printf("Unimplemented opcode. \n");
+            }
+            break;
         case 0x02:
             // call subroutine 0x2NNN at NNN
             *chip8->stack_ptr = chip8->PC; // store current address to return on subroutine address
             chip8->PC = chip8->inst.NNN; // set program ciunter to subroutine address
+
+            break;
+        
+        case 0x06:
+            // 0x6XNN: Set reigster VX to NN
+            printf("Set register V%X to NN (0x%02X)\n", chip8->inst.X, chip8->inst.NN);
+            break;
+
+        case 0x0A:
+            // 0xANNN: Set index register I to NNN
+            printf("Set I to NNN (0x%04X)\n", chip8->inst.NNN);
 
             break;
     default:
@@ -243,6 +258,16 @@ void emulator_instructions(chip8_t *chip8) {
             *chip8->stack_ptr = chip8->PC; // store current address to return on subroutine address
             chip8->PC = chip8->inst.NNN; // set program ciunter to subroutine address
 
+            break;
+        
+        case 0x06:
+            // 0x6XNN: Set reigster VX to NN
+            chip8->V[chip8->inst.X] = chip8->inst.NN;
+            break;
+        
+        case 0x0A:
+            // 0xANNN: Set index register I to NNN
+            chip8->I = chip8->inst.NNN;
             break;
     default:
         break; // Invalid opcode
