@@ -136,7 +136,41 @@ void clear_screen(const config_t config, sdl_t sdl) {
 }
 
 // Update screen with changes
-void update_screen(const sdl_t sdl) {
+void update_screen(const sdl_t sdl, const config_t config, const chip8_t chip8) {
+    SDL_Rect rect = {.x = 0, .y = 0, .w = config.scale, .h = scale_factor};
+
+    // Colours values foregrounds
+    const uint8_t fg_r = (config.bg_color >> 24) & 0xFF; // Shift to 24 bits then mask it off
+    const uint8_t fg_g = (config.bg_color >> 16) & 0xFF; // Shift to 16 bits then mask it off
+    const uint8_t fg_b = (config.bg_color >> 8) & 0xFF; // Shift to 8 bits then mask it off
+    const uint8_t fg_a = (config.bg_color >> 0) & 0xFF; // Shift to 0 bit then mask it off
+
+    // Colours values background
+    const uint8_t bg_r = (config.bg_color >> 24) & 0xFF; // Shift to 24 bits then mask it off
+    const uint8_t bg_g = (config.bg_color >> 16) & 0xFF; // Shift to 16 bits then mask it off
+    const uint8_t bg_b = (config.bg_color >> 8) & 0xFF; // Shift to 8 bits then mask it off
+    const uint8_t bg_a = (config.bg_color >> 0) & 0xFF; // Shift to 0 bit then mask it off
+
+    // loop through display pixel, draw a rect pre pixel to sdl window
+    for (uint32_t i = 0; i < sizeof chip8->display; i++) {
+        // translate index i to 2d x/y coords
+        // x = i % widdow_width
+        // y = i / window_width
+        rect.x = i % config.window_width;
+        rect.y = i / config.window_width;
+
+        // If the pixel is on, draw foreground
+        if (chip8->display[i]) {
+            SDL_SetRenderDrawColor(sdl.renderer, fg_r, fg_g, fg_b, fg_a)
+            SDL_RenderFillRect(sdl.renderer, rect);
+        }
+        // pixel is off, draw background
+        else {
+            SDL_SetRenderDrawColor(sdl.renderer, bg_r, bg_g, bg_b, bg_a)
+            SDL_RenderFillRect(sdl.renderer, rect);
+        }
+
+    }
     SDL_RenderPresent(sdl.renderer);
 }
 
@@ -443,7 +477,7 @@ int main(int argc, char **argv) {
         clear_screen(config, sdl);
 
         // Update the window with changes
-        update_screen(sdl);
+        update_screen(sdl, config, chip8);
     }
 
     // Final Cleanup
