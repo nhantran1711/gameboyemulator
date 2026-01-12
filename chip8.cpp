@@ -192,14 +192,25 @@ void emulator_instructions(chip8_t *chip8) {
     chip8->inst.Y = (chip8->inst.opcode >> 4) & 0x0F;
 
 
-    switch (chip8->inst.opcode)
+    switch ((chip8->inst.opcode >> 12) & 0x0F)
     {
-    case constant expression:
-        /* code */
-        break;
-    
+        case 0x00:
+            if (chip8->inst.NN == 0xE0) {
+                // clear screen 0x00E0
+                memset(chip8->display[0], false, sizeof chip8->display);
+            }
+            else if (chip8->inst.NN == 0xEE) {
+                // Return from subroutine
+                chip8->PC = *--chip8->stack_ptr;
+            }
+        case 0x02:
+            // call subroutine 0x2NNN at NNN
+            *chip8->stack_ptr = chip8->PC; // store current address to return on subroutine address
+            chip8->PC = chip8->inst.NNN; // set program ciunter to subroutine address
+
+            break;
     default:
-        break;
+        break; // Invalid opcode
     }
 }
 
@@ -261,6 +272,7 @@ bool init_chip8(chip8_t *chip8, const char rom_name[]) {
     chip8->state = RUNNING; 
     chip8->PC = entry_point;
     chip8->rom_name = rom_name;
+    chip8->stack_ptr = &chip8->stack[0];
 
     return true;
 }
