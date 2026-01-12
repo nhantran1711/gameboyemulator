@@ -250,6 +250,14 @@ void print_debug_info(chip8_t *chip8) {
             printf("Set I to NNN (0x%04X)\n", chip8->inst.NNN);
 
             break;
+
+        case 0x0D:
+            // Draw at N coords
+            prinf("Draw N (%d) at height sprite at coords V%X (0x%02X), V%X (0x%02X) from memory location I (0x%04X)", 
+                chip8->inst.N, chip8->inst.X, chip8->V[chip8->inst.X], chip8->inst.Y, chip8->V[chip8->inst.Y], chip8->I
+            );
+            break;
+
     default:
         printf("Unimplemented opcode. \n");
         break; // Invalid opcode
