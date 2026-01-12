@@ -56,6 +56,18 @@ make
 ```
 
 
+# Debug 
+
+```bash
+
+make debug
+./chip8 "IBM Logo.ch8"
+# or
+# ./chip8 IBM\ Logo.ch8"
+
+
+```
+
 
 ---
 
