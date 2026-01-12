@@ -38,11 +38,18 @@ Clone github
 
 ```bash
 git clone https://github.com/nhantran1711/chip8emulator.git
-cd chip8emulator / or ur folder
+cd chip8emulator
 ```
 
 
 ## Running application
+
+Making sure that you are on the **same folder** as ./chip8, or else it won't work
+
+Making sure that when run _make_, it shouldn't scream any issue, if it does, please make an issue ticket
+
+otherwise, run ./chip8
+
 ```bash
 make
 ./chip8
