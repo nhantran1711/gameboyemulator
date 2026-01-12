@@ -226,7 +226,7 @@ void print_debug_info(chip8_t *chip8) {
 
 
 // Emulate 1 chip 8 instuctions
-void emulator_instructions(chip8_t *chip8) {
+void emulator_instructions(chip8_t *chip8, const config_t config) {
     // Get the next opcode from RAM
     chip8->inst.opcode = (chip8->ram[chip8 -> PC] << 8) | (chip8 -> ram[chip8->PC + 1]);
 
@@ -269,6 +269,31 @@ void emulator_instructions(chip8_t *chip8) {
             // 0xANNN: Set index register I to NNN
             chip8->I = chip8->inst.NNN;
             break;
+        
+        case 0x0D:
+            // 0xDXYN: Draw N height sprite at coords X and Y
+            // Read from memory location I
+            // VF (Carry Flag) is set if any
+            // Screen pixels are XOR with sprite bits
+            const uint8_t X_coord = chip8-> V[chip8->inst.X] % config.window_width;
+            const uint8_t Y_coord = chip8-> V[chip8->inst.Y] % config.window_height;
+            chip8->V[0xF] = 0; // Init carry to 0
+
+            // Loop through instructions
+            for (uint8_t i = 0; i < chip8->inst.N; i++) {
+                // Get the next byte/row of sprite data
+                const uint8_t sprite_data = chip8->ram[chip9->I + i];
+
+                for (uint8_t j = 7; j >= 0; j --) {
+                    // If sprite pixil nits is on and display pixel is on, set carry flage
+                    if ((sprite_data & (1 << j)) && chip8->display[Y_coord * config.window_width + X_coord]) {
+                        chip8->V[0xF] = 1 // Set bit to 1
+                    }
+
+                    // XOR Display pixel with sprite pixel/bit
+                    chip8->display[Y_coord * config.window_height + X_coord] ^= (sprite_data & (1 << j));
+                }
+            }
     default:
         break; // Invalid opcode
     }
@@ -388,7 +413,7 @@ int main(int argc, char **argv) {
         }
 
         // Instruction for chip 8
-        emulator_instructions(&chip8);
+        emulator_instructions(&chip8, config);
 
         // Print debug info
         #ifdef DEBUG
