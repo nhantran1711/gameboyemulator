@@ -233,6 +233,11 @@ void print_debug_info(chip8_t *chip8) {
                 printf("Unimplemented opcode. \n");
             }
             break;
+        
+        case 0x01:
+            // 0x01: Jump to address NNN
+            printf("Jump to address NNN (0x%04X)\n", chip8->inst.NNN);
+            
         case 0x02:
             // call subroutine 0x2NNN at NNN
             *chip8->stack_ptr = chip8->PC; // store current address to return on subroutine address
@@ -300,6 +305,12 @@ void emulator_instructions(chip8_t *chip8, const config_t config) {
                 chip8->PC = *--chip8->stack_ptr;
             }
             break;
+        
+        case 0x01:
+            // 0x01: Jump to address NNN
+            chip8->PC = chip8->inst.NNN; // Set program counter 
+            break;
+            
         case 0x02:
             // call subroutine 0x2NNN at NNN
             *chip8->stack_ptr = chip8->PC; // store current address to return on subroutine address
