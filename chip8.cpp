@@ -338,7 +338,10 @@ void print_debug_info(chip8_t *chip8) {
             break;
         }
 
-
+        case 0x09:
+            // 0x9XY0: Check if VX != VY
+            printf("Check if V%X (0x%02X) != V%X (0x%02X), skip next instruction if true\n", chip8->inst.X, chip8->V[chip8->inst.X], chip8->inst.Y, chip8->V[chip8->inst.Y]);
+            break;
 
         case 0x0A:
             // 0xANNN: Set index register I to NNN
@@ -501,7 +504,12 @@ void emulator_instructions(chip8_t *chip8, const config_t config) {
             break;
         }
 
-            
+        case 0x09:
+            // 0x9XY0: Check if VX != VY
+            if (chip8 -> V[chip8->inst.X] != chip8->V[chip8->inst.Y]) {
+                chip8->PC += 2;
+            }    
+            break;
         
         case 0x0A:
             // 0xANNN: Set index register I to NNN
