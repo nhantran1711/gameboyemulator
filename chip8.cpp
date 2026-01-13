@@ -332,15 +332,18 @@ void emulator_instructions(chip8_t *chip8, const config_t config) {
 
                 for (int j = 7; j >= 0; j --) {
                     // If sprite pixil nits is on and display pixel is on, set carry flage
-                    bool *pixel = &chip8->display[Y_coord * config.window_width + X_coord];
+                    uint8_t x = X_coord % config.window_width;
+                    uint8_t y = Y_coord % config.window_height;
+
+                    bool *pixel = &chip8->display[y * config.window_width + x];
                     const bool sprite_bit = (sprite_data & (1 << j));
 
-                    if ( sprite_bit && *pixel) {
-                        chip8->V[0xF] = 1; // Set bit to 1
+                    if (sprite_bit && *pixel) {
+                        chip8->V[0xF] = 1;
                     }
 
-                    // XOR Display pixel with sprite pixel/bit
                     *pixel ^= sprite_bit;
+                    X_coord++;
 
                     // Stop drawing if hit right edge
                     if (++X_coord >= config.window_width) {
