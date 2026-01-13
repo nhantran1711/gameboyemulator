@@ -20,6 +20,7 @@ typedef struct
     uint32_t fg_color; // Foreground colour
     uint32_t bg_color; // background colour
     uint32_t scale_factor; // scale factor
+    bool pixel_outlines; // Draw [pixel outline]
 } config_t;
 
 // Emulator states
@@ -72,7 +73,8 @@ bool set_config(config_t *config, const int argc, const char **argv) {
         32, // Origin Y
         0xFFFFFFFF, // White
         0x00000000, // Black
-        10 // Scale Factor
+        10, // Scale Factor
+        true // Draw pixel outlines by default
     };
 
     // Override default values
@@ -163,6 +165,13 @@ void update_screen(const sdl_t sdl, const config_t config, const chip8_t chip8) 
         if (chip8.display[i]) {
             SDL_SetRenderDrawColor(sdl.renderer, fg_r, fg_g, fg_b, fg_a);
             SDL_RenderFillRect(sdl.renderer, &rect);
+
+            // If user requuest drawing pixel outlines, draw those
+            if (config.pixel_outlines) {
+                SDL_SetRenderDrawColor(sdl.renderer, bg_r, bg_g, bg_b, bg_a);
+                SDL_RenderRect(sdl.renderer, &rect);
+            }
+
         }
         // pixel is off, draw background
         else {
