@@ -279,6 +279,36 @@ void print_debug_info(chip8_t *chip8) {
             printf("Set register V%X (0x%02X) += NN (0x%02X)\n", chip8->inst.X, chip8->V[chip8->inst.X], chip8->inst.NN);
             break;
 
+        case 0x08: {
+            switch(chip8->inst.N) {
+                case 0:
+                    chip8->V[chip8->inst.X] = chip8->V[chip8->inst.Y];
+                    break;
+                case 1:
+                    chip8->V[chip8->inst.X] |= chip8->V[chip8->inst.Y];
+                    break;
+                case 2:
+                    chip8->V[chip8->inst.X] &= chip8->V[chip8->inst.Y];
+                    break;
+                case 3:
+                    chip8->V[chip8->inst.X] ^= chip8->V[chip8->inst.Y];
+                    break;
+                case 4:
+                    chip8->V[0xF] = ((uint16_t)(chip8->V[chip8->inst.X] + chip8->V[chip8->inst.Y]) > 255) ? 1 : 0;
+                    chip8->V[chip8->inst.X] += chip8->V[chip8->inst.Y];
+                    break;
+                case 5:
+                    chip8->V[0xF] = (chip8->V[chip8->inst.X] >= chip8->V[chip8->inst.Y]) ? 1 : 0;
+                    chip8->V[chip8->inst.X] -= chip8->V[chip8->inst.Y];
+                    break;
+                default:
+                    printf("Unknown 0x8XYN opcode: 0x%X\n", chip8->inst.N);
+                    break;
+            }
+            break; // break for outer case 0x08
+        }
+
+
         case 0x0A:
             // 0xANNN: Set index register I to NNN
             printf("Set I to NNN (0x%04X)\n", chip8->inst.NNN);
@@ -383,6 +413,45 @@ void emulator_instructions(chip8_t *chip8, const config_t config) {
             // 0x7XNN: Set register VC += to NN
             chip8->V[chip8->inst.X] += chip8->inst.NN;
             break;
+
+        case 0x08:{
+            switch(chip8 ->inst.N) {
+                // 0x8XY0: Set register VX = VY:
+                case 0:
+                    chip8->V[chip8->inst.X] = chip8->V[chip8->inst.Y];
+                    break;
+                
+                case 1:
+                    chip8->V[chip8->inst.X] |= chip8->V[chip8->inst.Y];
+                    break; 
+
+                case 2:
+                    chip8->V[chip8->inst.X] &= chip8->V[chip8->inst.Y];
+                    break; 
+
+                case 3:
+                    chip8->V[chip8->inst.X] ^= chip8->V[chip8->inst.Y];
+                    break; 
+
+                case 4: // VX += VY, VF = carry
+                    chip8->V[0xF] = ((uint16_t)(chip8->V[chip8->inst.X] + chip8->V[chip8->inst.Y]) > 255) ? 1 : 0;
+                    chip8->V[chip8->inst.X] += chip8->V[chip8->inst.Y];
+                    break;
+
+                case 5: // VX -= VY, VF = NOT borrow
+                    chip8->V[0xF] = (chip8->V[chip8->inst.X] >= chip8->V[chip8->inst.Y]) ? 1 : 0;
+                    chip8->V[chip8->inst.X] -= chip8->V[chip8->inst.Y];
+                    break;
+
+                default:
+                    // Wrong opcode
+                    break;
+            }
+
+            break;
+        }
+
+            
         
         case 0x0A:
             // 0xANNN: Set index register I to NNN
