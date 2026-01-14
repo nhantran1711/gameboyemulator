@@ -364,13 +364,13 @@ void print_debug_info(chip8_t *chip8) {
             if (chip8->inst.NN == 0x9E) {
                 // Skip next instruction if key in VX is pressed
                 printf("Skip next instruction if key in V%X (0X%02X) is pressed; Key pad value: %d\n", 
-                    chip8->instX, chip8->V[chip8->inst.X], chip8->keypad[chip8->V[chip8->inst.X]]);
+                    chip8->inst.X, chip8->V[chip8->inst.X], chip8->keypad[chip8->V[chip8->inst.X]]);
                 
             }
             else if (chip8->inst.NN == 0xA1) {
                 // Skip next instruction if key in VX is not pressed
                 printf("Skip next instruction if key in V%X (0X%02X) is NOT pressed; Key pad value: %d\n", 
-                    chip8->instX, chip8->V[chip8->inst.X], chip8->keypad[chip8->V[chip8->inst.X]]);
+                    chip8->inst.X, chip8->V[chip8->inst.X], chip8->keypad[chip8->V[chip8->inst.X]]);
             }
             break;
 
