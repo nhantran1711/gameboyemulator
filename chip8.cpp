@@ -211,10 +211,147 @@ void handle_input(chip8_t *chip8) {
                 }
                 return;
             }
+            //
+            // Key pads, Map
+            //
+
+            
+            else if (event.key.key == SDLK_1) {
+                chip8->keypad[0x1] = true;
+                break;
+            }
+            else if (event.key.key == SDLK_2) {
+                chip8->keypad[0x2] = true;
+                break;
+            }
+            else if (event.key.key == SDLK_3) {
+                chip8->keypad[0x1] = true;
+                break;
+            }
+            else if (event.key.key == SDLK_4) {
+                chip8->keypad[0xC] = true;
+                break;
+            }
+
+            else if (event.key.key == SDLK_Q) {
+                chip8->keypad[0x4] = true;
+                break;
+            }
+            else if (event.key.key == SDLK_W) {
+                chip8->keypad[0x5] = true;
+                break;
+            }
+            else if (event.key.key == SDLK_E) {
+                chip8->keypad[0x6] = true;
+                break;
+            }
+            else if (event.key.key == SDLK_R) {
+                chip8->keypad[0xD] = true;
+                break;
+            }
+            else if (event.key.key == SDLK_A) {
+                chip8->keypad[0x7] = true;
+                break;
+            }
+            else if (event.key.key == SDLK_S) {
+                chip8->keypad[0x8] = true;
+                break;
+            }
+            else if (event.key.key == SDLK_D) {
+                chip8->keypad[0x9] = true;
+                break;
+            }
+            else if (event.key.key == SDLK_F) {
+                chip8->keypad[0xE] = true;
+                break;
+            }
+            else if (event.key.key == SDLK_Z) {
+                chip8->keypad[0xA] = true;
+                break;
+            }
+            else if (event.key.key == SDLK_X) {
+                chip8->keypad[0x0] = true;
+                break;
+            }
+            else if (event.key.key == SDLK_C) {
+                chip8->keypad[0xB] = true;
+                break;
+            }
+            else if (event.key.key == SDLK_V) {
+                chip8->keypad[0xF] = true;
+                break;
+            }
+
 
             break;
 
         case SDL_EVENT_KEY_UP:
+
+            if (event.key.key == SDLK_1) {
+                chip8->keypad[0x1] = false;
+                break;
+            }
+            else if (event.key.key == SDLK_2) {
+                chip8->keypad[0x2] = false;
+                break;
+            }
+            else if (event.key.key == SDLK_3) {
+                chip8->keypad[0x1] = false;
+                break;
+            }
+            else if (event.key.key == SDLK_4) {
+                chip8->keypad[0xC] = false;
+                break;
+            }
+
+            else if (event.key.key == SDLK_Q) {
+                chip8->keypad[0x4] = false;
+                break;
+            }
+            else if (event.key.key == SDLK_W) {
+                chip8->keypad[0x5] = false;
+                break;
+            }
+            else if (event.key.key == SDLK_E) {
+                chip8->keypad[0x6] = false;
+                break;
+            }
+            else if (event.key.key == SDLK_R) {
+                chip8->keypad[0xD] = false;
+                break;
+            }
+            else if (event.key.key == SDLK_A) {
+                chip8->keypad[0x7] = false;
+                break;
+            }
+            else if (event.key.key == SDLK_S) {
+                chip8->keypad[0x8] = false;
+                break;
+            }
+            else if (event.key.key == SDLK_D) {
+                chip8->keypad[0x9] = false;
+                break;
+            }
+            else if (event.key.key == SDLK_F) {
+                chip8->keypad[0xE] = false;
+                break;
+            }
+            else if (event.key.key == SDLK_Z) {
+                chip8->keypad[0xA] = false;
+                break;
+            }
+            else if (event.key.key == SDLK_X) {
+                chip8->keypad[0x0] = false;
+                break;
+            }
+            else if (event.key.key == SDLK_C) {
+                chip8->keypad[0xB] = false;
+                break;
+            }
+            else if (event.key.key == SDLK_V) {
+                chip8->keypad[0xF] = false;
+                break;
+            }
             break;
 
         default:
@@ -604,6 +741,17 @@ void emulator_instructions(chip8_t *chip8, const config_t config) {
                 }
             }
             break;
+        
+        case 0x0F:{
+            switch (chip8->inst.NN)
+            {
+            case 0x0A:
+                // await unitl a keypress
+                break;
+            
+            default:
+                break;
+            }}
     default:
         break; // Invalid opcode
     }
