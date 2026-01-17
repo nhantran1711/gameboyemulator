@@ -48,7 +48,7 @@ typedef struct
     emulator_state_t state;
     uint8_t ram[4096];
     bool display[64 * 32]; // original chip 8 resolution
-    uint16_t stack[12]; // Subroutine stack
+    uint16_t stack[16]; // Subroutine stack
     uint16_t *stack_ptr;
     uint8_t V[16]; // Data Register
     uint16_t I; // Index Register
@@ -296,7 +296,7 @@ void handle_input(chip8_t *chip8) {
                 break;
             }
             else if (event.key.key == SDLK_3) {
-                chip8->keypad[0x1] = false;
+                chip8->keypad[0x3] = false;
                 break;
             }
             else if (event.key.key == SDLK_4) {
@@ -362,7 +362,7 @@ void handle_input(chip8_t *chip8) {
 
 #ifdef DEBUG
 void print_debug_info(chip8_t *chip8) {
-    printf("Address: 0x%04X, Opcode: 0x%04X Desc: ", chip8->PC - 2, chip8->inst.opcode);
+    printf("Address: 0x%04X, Opcode: 0x%04X Desc: ", chip8->PC, chip8->inst.opcode);
     switch ((chip8->inst.opcode >> 12) & 0x0F)
     {
         case 0x00:
@@ -383,6 +383,7 @@ void print_debug_info(chip8_t *chip8) {
         case 0x01:
             // 0x01: Jump to address NNN
             printf("Jump to address NNN (0x%04X)\n", chip8->inst.NNN);
+            break;
             
         case 0x02:
             // call subroutine 0x2NNN at NNN
@@ -596,6 +597,7 @@ void emulator_instructions(chip8_t *chip8, const config_t config) {
         case 0x06:
             // 0x6XNN: Set reigster VX to NN
             chip8->V[chip8->inst.X] = chip8->inst.NN;
+            printf("DEBUG: V%X set to 0x%02X\n", chip8->inst.X, chip8->V[chip8->inst.X]);
             break;
         
         case 0x07:
@@ -647,6 +649,12 @@ void emulator_instructions(chip8_t *chip8, const config_t config) {
 
                 case 8:
                     // 0x08XY8
+                    chip8->V[0xF] = (chip8->V[chip8->inst.X] & 0x80) >> 7;
+                    chip8->V[chip8->inst.X] <<= 1;
+                    break;
+                    
+                case 0xE:
+                    // 0x8XYE: VX <<= 1, VF = most-significant bit before shift
                     chip8->V[0xF] = (chip8->V[chip8->inst.X] & 0x80) >> 7;
                     chip8->V[chip8->inst.X] <<= 1;
                     break;
@@ -759,6 +767,7 @@ void emulator_instructions(chip8_t *chip8, const config_t config) {
                 // Keep getting the current opcode and running this instruction when nothing have been pressed
                 if (!any_key) {
                     chip8->PC -= 2;
+                    any_key = true;
                 }}
                 break;
             
@@ -792,14 +801,11 @@ void emulator_instructions(chip8_t *chip8, const config_t config) {
             
             case 0x33:{
                 // store BCD of VX of memory offset from I
-                uint8_t bcd = chip8->V[chip8->inst.X];
-                chip8->ram[chip8->I + 2] = bcd % 10;
-                bcd /= 10;
+                uint8_t value = chip8->V[chip8->inst.X];
 
-                chip8->ram[chip8->I + 1] = bcd % 10;
-                bcd /= 10;
-
-                chip8->ram[chip8->I] = bcd;
+                chip8->ram[chip8->I]     = value / 100;        // hundreds
+                chip8->ram[chip8->I + 1] = (value / 10) % 10;  // tens
+                chip8->ram[chip8->I + 2] = value % 10;         // ones
                 break;
             }
 
