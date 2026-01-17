@@ -746,7 +746,21 @@ void emulator_instructions(chip8_t *chip8, const config_t config) {
             switch (chip8->inst.NN)
             {
             case 0x0A:
-                // await unitl a keypress
+                
+            // Await until a key press, and store in VX
+            bool any_key = false;
+            for (uint8_t i = 0; i < sizeof chip8->keypad; i ++) {
+                if (chip8->keypad[i]) {
+                    chip8->V[chip8->inst.X] = i;
+                    any_key = true;
+                    break;
+                }
+
+                // Keep getting the current opcode and running this instruction when nothing have been pressed
+                if (!any_key) {
+                    chip8->PC -= 2;
+                }
+            }
                 break;
             
             default:
