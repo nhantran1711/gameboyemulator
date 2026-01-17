@@ -783,6 +783,12 @@ void emulator_instructions(chip8_t *chip8, const config_t config) {
                 // sound timer = VX
                 chip8->sound_timer = chip8->V[chip8->inst.X];
                 break;
+
+            
+            case 0x29;
+                // set register I to sprite location in memory in characters in VX
+                chip8->I = chip8->V[chip8->inst.X] * 5;
+                break;
             
             default:
                 break;
