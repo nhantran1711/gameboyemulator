@@ -802,6 +802,20 @@ void emulator_instructions(chip8_t *chip8, const config_t config) {
                 chip8->ram[chip8->I] = bcd;
                 break;
             
+
+            case 0x55:
+                // Reguster dump V0-VX inclusive to memory offset from I
+                for (uint8_t i = 0; i <= chip8->inst.X; i ++) {
+                    chip8->ram[chip8->I + i] = chip8->V[i];
+                }
+                break;
+
+            case 0x65:
+                // Load V0-VX inclusivb eto memory offset from I
+                for (uint8_t i = 0; i <= chip8->inst.X; i ++) {
+                    chip8->V[i] = chip8->ram[chip8->I + i];
+                }
+            
             default:
                 break;
             }}
