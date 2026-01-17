@@ -790,6 +790,18 @@ void emulator_instructions(chip8_t *chip8, const config_t config) {
                 chip8->I = chip8->V[chip8->inst.X] * 5;
                 break;
             
+            case 0x33:
+                // store BCD of VX of memory offset from I
+                uint8_t bcd = chip8->V[chip8->inst.X];
+                chip8->ram[chip8->I + 2] = bcd % 10;
+                bcd /= 10;
+
+                chip8->ram[chip8->I + 1] = bcd % 10;
+                bcd /= 10;
+
+                chip8->ram[chip8->I] = bcd;
+                break;
+            
             default:
                 break;
             }}
