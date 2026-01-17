@@ -974,7 +974,7 @@ int main(int argc, char **argv) {
         // Get time after running application
         uint64_t after_frame = SDL_GetPerformanceCounter();
 
-        double time_elapsed = (double) ((after_frame - prev_frame) / 1000) / SDL_GetPerformanceFrequency();
+        double time_elapsed = (double) ((after_frame - prev_frame) * 1000) / SDL_GetPerformanceFrequency();
 
         // Print debug info
         #ifdef DEBUG
