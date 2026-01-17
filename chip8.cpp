@@ -225,7 +225,7 @@ void handle_input(chip8_t *chip8) {
                 break;
             }
             else if (event.key.key == SDLK_3) {
-                chip8->keypad[0x1] = true;
+                chip8->keypad[0x3] = true;
                 break;
             }
             else if (event.key.key == SDLK_4) {
@@ -745,7 +745,7 @@ void emulator_instructions(chip8_t *chip8, const config_t config) {
         case 0x0F:{
             switch (chip8->inst.NN)
             {
-            case 0x0A:
+            case 0x0A:{
                 // Await until a key press, and store in VX
                 bool any_key = false;
                 for (uint8_t i = 0; i < sizeof chip8->keypad; i ++) {
@@ -754,12 +754,12 @@ void emulator_instructions(chip8_t *chip8, const config_t config) {
                         any_key = true;
                         break;
                     }
-
-                    // Keep getting the current opcode and running this instruction when nothing have been pressed
-                    if (!any_key) {
-                        chip8->PC -= 2;
-                    }
                 }
+
+                // Keep getting the current opcode and running this instruction when nothing have been pressed
+                if (!any_key) {
+                    chip8->PC -= 2;
+                }}
                 break;
             
             case 0X1E:
@@ -774,7 +774,7 @@ void emulator_instructions(chip8_t *chip8, const config_t config) {
                 break;
 
             
-            case 0x15;
+            case 0x15:
                 // delay timer = VX
                 chip8->delay_timer = chip8->V[chip8->inst.X];
                 break;
@@ -785,12 +785,12 @@ void emulator_instructions(chip8_t *chip8, const config_t config) {
                 break;
 
             
-            case 0x29;
+            case 0x29:
                 // set register I to sprite location in memory in characters in VX
                 chip8->I = chip8->V[chip8->inst.X] * 5;
                 break;
             
-            case 0x33:
+            case 0x33:{
                 // store BCD of VX of memory offset from I
                 uint8_t bcd = chip8->V[chip8->inst.X];
                 chip8->ram[chip8->I + 2] = bcd % 10;
@@ -801,7 +801,7 @@ void emulator_instructions(chip8_t *chip8, const config_t config) {
 
                 chip8->ram[chip8->I] = bcd;
                 break;
-            
+            }
 
             case 0x55:
                 // Reguster dump V0-VX inclusive to memory offset from I
@@ -815,6 +815,7 @@ void emulator_instructions(chip8_t *chip8, const config_t config) {
                 for (uint8_t i = 0; i <= chip8->inst.X; i ++) {
                     chip8->V[i] = chip8->ram[chip8->I + i];
                 }
+                break;
             
             default:
                 break;
