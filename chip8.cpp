@@ -896,7 +896,20 @@ bool init_chip8(chip8_t *chip8, const char rom_name[]) {
     return true;
 }
 
+// Update delay and timer for chip8 
+void update_timers(chip8_t *chip8) {
+    if (chip8->delay_timer > 0) {
+        chip8 ->delay_timer --;
+    }
 
+    if (chip8->sound_timer > 0) {
+        chip8->sound_timer -- ;
+        // TODO: play sound
+    }
+    else {
+        // TODO: stop sound
+    }
+}
 
 
 
@@ -953,7 +966,7 @@ int main(int argc, char **argv) {
         const uint64_t prev_frame = SDL_GetPerformanceCounter();
 
         // Emulate instructions for frame
-        for (uint32 i = 0; i < config.insts_per_sec / 60; i ++) {
+        for (uint32_t i = 0; i < config.insts_per_sec / 60; i ++) {
             // Instruction for chip 8
             emulator_instructions(&chip8, config);
         }
